@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Slideshow</title>
+    <link rel="icon" type="image/x-icon" href="/i/favicon.png">
+    <style>
+        img {
+            width: 100%;
+            max-width: 600px;
+            display: block;
+            margin: auto;
+        }
+    </style>
+</head>
+
+<body>
+    <img id="slideshow" src="i/image1.webp" alt="Slideshow Image">
+    <button id="fullscreen">fullscreen</button>
+    <script>
+        const images = ["i/image1.webp", "i/image2.webp", "i/image3.webp"]; // Add image paths here
+        let index = 0;
+        function showNextImage() {
+            index = (index + 1) % images.length;
+            document.getElementById('slideshow').src = images[index];
+        }
+        setInterval(showNextImage, 3000); // Change image every 3 seconds
+
+        // window.addEventListener("broadcast", e => {
+        //     console.log(e.detail);
+        // });
+
+        let wakeLock = null;
+
+        // Function that attempts to request a wake lock.
+        const requestWakeLock = async () => {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released');
+                });
+                console.log('Wake Lock is active');
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
+        };
+
+
+        // requestWakeLock();
+
+        document.getElementById('fullscreen').addEventListener("click", e => {
+            console.log('container click')
+            requestWakeLock();
+            document.getElementById('slideshow').requestFullscreen({
+                navigationUI: 'hide'
+
+            })
+
+        });
+
+    </script>
+</body>
+
+</html>

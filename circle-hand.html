@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BodyPose Particle Clouds</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/p5.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.4.0/addons/p5.dom.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ml5@latest/dist/ml5.min.js"></script>
+</head>
+
+<body>
+    <script>
+        let handPose;
+        let video;
+        let hands = [];
+        let particles = [];
+
+        function preload() {
+            handPose = ml5.handPose();
+        }
+        function setup() {
+            createCanvas(640, 480);
+
+            // Create the video and hide it
+            video = createCapture(VIDEO);
+            video.size(640, 480);
+            video.hide();
+
+            // Start detecting hands from the webcam video
+            handPose.detectStart(video, gotHands);
+        }
+
+        // Callback function for when handPose outputs data
+        function gotHands(results) {
+            // Save the output to the hands variable
+            hands = results;
+        }
+
+        function draw() {
+            // Draw the video
+            image(video, 0, 0, width, height);
+
+            if (hands.length > 0) {
+                // Find the index finger tip and thumb tip
+                let finger = hands[0].index_finger_tip;
+                let thumb = hands[0].thumb_tip;
+
+                // Draw circles at finger positions
+                let centerX = (finger.x + thumb.x) / 2;
+                let centerY = (finger.y + thumb.y) / 2;
+                // Calculate the pinch "distance" between finger and thumb
+                let pinch = dist(finger.x, finger.y, thumb.x, thumb.y);
+
+                // This circle's size is controlled by a "pinch" gesture
+                fill(234, 125, 255, 200);
+                stroke(0);
+                strokeWeight(2);
+                circle(centerX, centerY, pinch);
+            }
+
+            // Desenhar todas as partículas
+            //drawParticles();
+
+            // Draw all the tracked hand points
+            // for (let i = 0; i < hands.length; i++) {
+            //     let hand = hands[i];
+            //     for (let j = 0; j < hand.keypoints.length; j++) {
+            //         let keypoint = hand.keypoints[j];
+            //         fill(234, 125, 255);
+            //         noStroke();
+            //         circle(keypoint.x, keypoint.y, 10);
+
+            //         if(hand.keypoints[j] === hand.keypoints[8]){
+            //             fill(255, 255, 255);
+            //             noStroke();
+            //             circle(keypoint.x, keypoint.y, 10);
+            //         }
+            //     }
+            // }
+        }
+
+        // Função para criar e atualizar partículas
+        function updateParticles(x, y) {
+            particles.push(new Particle(x, y));
+            // Limitar número de partículas para performance
+            if (particles.length > 100) {
+                particles.splice(0, 1);
+            }
+        }
+
+        // Função para desenhar partículas
+        function drawParticles() {
+            for (let i = particles.length - 1; i >= 0; i--) {
+                particles[i].update();
+                particles[i].show();
+                if (particles[i].finished()) {
+                    particles.splice(i, 1);
+                }
+            }
+        }
+
+        // Classe Particle
+        class Particle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = random(-1, 1);
+                this.vy = random(-1, 1);
+                this.alpha = 255;
+            }
+
+            finished() {
+                return this.alpha < 0;
+            }
+
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= 5;
+            }
+
+            show() {
+                noStroke();
+                fill(8, 242, 219, this.alpha); // Turquesa com transparência
+                ellipse(this.x, this.y, 10);
+            }
+        }
+
+    </script>
+</body>
+
+</html>

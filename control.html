@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Control Servo</title>
+    <link rel="icon" type="image/x-icon" href="/i/favicon.png">
+</head>
+<body>
+    <button onclick="sendPosition(0)">Set Servo to 0°</button>
+    <button onclick="sendPosition(180)">Set Servo to 180°</button>
+
+    <script>
+        const socket = new WebSocket('ws://localhost:1234');
+
+        socket.onopen = () => console.log('Connected to WebSocket');
+        socket.onclose = () => console.log('Disconnected from WebSocket');
+        
+        function sendPosition(position) {
+            if (socket.readyState === WebSocket.OPEN) {
+                socket.send(position.toString());
+            } else {
+                console.log("WebSocket not connected");
+            }
+        }
+    </script>
+</body>
+</html>

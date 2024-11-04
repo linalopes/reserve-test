@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video</title>
+    <link rel="icon" type="image/x-icon" href="/i/favicon.png">
+</head>
+
+<body>
+    <video id="video" width="100%" controls autoplay loop muted>
+        <source src="i/video.mp4" type="video/mp4">
+      </video>
+
+    <button id="fullscreen">fullscreen</button>
+
+
+    <script>
+        // window.addEventListener("broadcast", e => {
+        //   console.log(e.detail);
+        // });
+
+        let wakeLock = null;
+
+        // Function that attempts to request a wake lock.
+        const requestWakeLock = async () => {
+            try {
+                wakeLock = await navigator.wakeLock.request('screen');
+                wakeLock.addEventListener('release', () => {
+                    console.log('Wake Lock was released');
+                });
+                console.log('Wake Lock is active');
+            } catch (err) {
+                console.error(`${err.name}, ${err.message}`);
+            }
+        };
+
+
+        // requestWakeLock();
+
+        document.getElementById('fullscreen').addEventListener("click", e => {
+            console.log('container click')
+            requestWakeLock();
+            document.getElementById('video').requestFullscreen({
+                navigationUI: 'hide'
+
+            })
+
+        });
+
+
+    </script>
+
+
+</body>
+
+</html>

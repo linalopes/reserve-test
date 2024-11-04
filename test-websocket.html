@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>WebSocket Test with LocalTunnel</title>
+</head>
+<body>
+    <h1>WebSocket Connection Test</h1>
+    <p id="status">Status: Not Connected</p>
+
+    <script>
+        // Conectar ao WebSocket usando o IP local do Mac, mesmo acessando via LocalTunnel
+        // const socket = new WebSocket('wss://192.168.1.102:1234');
+        // const socket = new WebSocket('wss://old-plants-cover.loca.lt:1234'); // Usando LocalTunnel e WSS
+        const socket = new WebSocket('wss://192.168.1.102:8080');
+
+        socket.onopen = function () {
+            document.getElementById('status').textContent = "Status: Connected";
+            console.log("WebSocket connected successfully");
+        };
+
+        socket.onclose = function () {
+            document.getElementById('status').textContent = "Status: Disconnected";
+            console.log("WebSocket disconnected");
+        };
+
+        socket.onerror = function (error) {
+            document.getElementById('status').textContent = "Status: Connection Error";
+            console.error("WebSocket error:", error);
+        };
+    </script>
+</body>
+</html>

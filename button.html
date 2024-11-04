@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast Button</title>
+</head>
+
+<body>
+    <h1>WebSocket Test</h1>
+    <button id="connect">Connect to WebSocket</button>
+    <button id="start-camera">Start Camera</button>
+    <video id="video" width="400" autoplay></video>
+
+    <button onclick="sendBroadcast()">Broadcast Message</button>
+
+    <script>
+        const wsUrl = 'wss://192.168.1.102:1234/ws';
+
+        // Connect to WebSocket
+        document.getElementById('connect').addEventListener('click', () => {
+            const socket = new WebSocket(wsUrl);
+
+            socket.onopen = () => {
+                console.log('Connected to WebSocket');
+                socket.send('Hello Server!');
+            };
+
+            socket.onmessage = (event) => {
+                console.log('Received from server:', event.data);
+            };
+
+            socket.onclose = () => {
+                console.log('Disconnected from WebSocket');
+            };
+
+            socket.onerror = (error) => {
+                console.error('WebSocket Error:', error);
+            };
+        });
+
+        // Access the camera
+        document.getElementById('start-camera').addEventListener('click', async () => {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const videoElement = document.getElementById('video');
+                videoElement.srcObject = stream;
+            } catch (error) {
+                console.error('Error accessing camera:', error);
+            }
+        });
+        
+        function sendBroadcast() {
+            reserve.broadcast({ foo: "bar" });
+            console.log("Broadcast sent: { foo: 'bar' }");
+        }
+    </script>
+</body>
+
+</html>
